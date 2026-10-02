@@ -1,13 +1,25 @@
 package com.board.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Post {
 
-    private final Long id;
-    private final String title;
-    private final String content;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Post(Long id, String title, String content) {
-        this.id = id;
+    private String title;
+
+    private String content;
+
+    protected Post(){
+    }
+
+    public Post(String title, String content) {
         this.title = title;
         this.content = content;
     }

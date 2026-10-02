@@ -20,11 +20,11 @@ public class HelloController {
     public String hello(@RequestParam String name) {
         return helloService.createGreeting(name);
     }
-
-    @GetMapping("/posts/sample")
-    public Post samplePost() {
-        return helloService.createSamplePost();
-    }
+//
+//    @GetMapping("/posts/sample")
+//    public Post samplePost() {
+//        return helloService.createSamplePost();
+//    }
 
     @GetMapping("/greeting")
     public String greeting() {

@@ -17,7 +17,4 @@ public class HelloService {
         return "Hello, " + name;
     }
 
-    public Post createSamplePost() {
-        return postRepository.findSamplePost();
-    }
 }
