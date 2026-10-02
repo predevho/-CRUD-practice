@@ -1,5 +1,6 @@
 package com.board.controller;
 
+import com.board.domain.Post;
 import com.board.service.HelloService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,11 @@ public class HelloController {
     @GetMapping("hello")
     public String hello(@RequestParam String name) {
         return helloService.createGreeting(name);
+    }
+
+    @GetMapping("/posts/sample")
+    public Post samplePost() {
+        return helloService.createSamplePost();
     }
 
     @GetMapping("/greeting")
