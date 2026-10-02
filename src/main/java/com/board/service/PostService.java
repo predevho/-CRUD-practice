@@ -1,6 +1,7 @@
 package com.board.service;
 
 import com.board.domain.Post;
+import com.board.dto.PostResponse;
 import com.board.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,10 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post createPost(String title, String content) {
+    public PostResponse createPost(String title, String content) {
         Post post = new Post(title, content);
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        return PostResponse.from(savedPost);
     }
 }

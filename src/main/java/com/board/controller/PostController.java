@@ -1,11 +1,10 @@
 package com.board.controller;
 
 import com.board.domain.Post;
+import com.board.dto.PostCreateRequest;
+import com.board.dto.PostResponse;
 import com.board.service.PostService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PostController {
@@ -17,8 +16,10 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public Post createPost(@RequestParam String title,
-                           @RequestParam String content) {
-        return postService.createPost(title, content);
+    public PostResponse createPost(@RequestBody PostCreateRequest request) {
+        return postService.createPost(
+                request.getTitle(),
+                request.getContent()
+        );
     }
 }
