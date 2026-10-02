@@ -6,6 +6,8 @@ import com.board.dto.PostResponse;
 import com.board.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class PostController {
 
@@ -21,5 +23,15 @@ public class PostController {
                 request.getTitle(),
                 request.getContent()
         );
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> findAllPosts() {
+        return postService.findAllPosts();
+    }
+
+    @GetMapping("/posts/{id}")
+    public PostResponse findPost(@PathVariable Long id) {
+        return postService.findPost(id);
     }
 }
