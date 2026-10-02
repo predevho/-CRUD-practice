@@ -1,0 +1,20 @@
+package com.board.service;
+
+import com.board.domain.Post;
+import com.board.repository.PostRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PostService {
+
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
+    public Post createPost(String title, String content) {
+        Post post = new Post(title, content);
+        return postRepository.save(post);
+    }
+}
