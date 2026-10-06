@@ -42,4 +42,18 @@ public class PostService {
 
         return PostResponse.from(post);
     }
+
+    public PostResponse updatePost(Long id, String title, String content) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "게시글을 찾을 수 없습니다."
+                        )
+                );
+        post.update(title, content);
+        Post savedPost = postRepository.save(post);
+
+        return PostResponse.from(savedPost);
+    }
 }
