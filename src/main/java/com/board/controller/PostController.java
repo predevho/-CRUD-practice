@@ -5,6 +5,7 @@ import com.board.dto.PostCreateRequest;
 import com.board.dto.PostResponse;
 import com.board.dto.PostUpdateRequest;
 import com.board.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public PostResponse createPost(@RequestBody PostCreateRequest request) {
+    public PostResponse createPost(
+            @Valid @RequestBody PostCreateRequest request
+    ) {
         return postService.createPost(
                 request.getTitle(),
                 request.getContent()
@@ -39,7 +42,7 @@ public class PostController {
     @PutMapping("/posts/{id}")
     public PostResponse updatePost(
             @PathVariable Long id,
-            @RequestBody PostUpdateRequest request
+            @Valid @RequestBody PostUpdateRequest request
     ) {
         return postService.updatePost(
                 id,

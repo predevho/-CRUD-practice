@@ -1,8 +1,13 @@
 package com.board.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class PostCreateRequest {
 
+    @NotBlank(message = "제목은 필수 입니다.")
     private String title;
+
+    @NotBlank(message = "내용은 필수 입니다.")
     private String content;
 
     public PostCreateRequest() {
