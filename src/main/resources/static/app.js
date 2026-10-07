@@ -53,11 +53,23 @@ async function loadPosts() {
             button.addEventListener("click", async function () {
                 const id = button.dataset.id;
 
-                await fetch(`/posts/${id}`, {
-                    method: "DELETE"
-                });
+                try {
+                    const response = await fetch(`/posts/${id}`, {
+                        method: "DELETE"
+                    });
 
-                await loadPosts();
+                    if (!response.ok) {
+                        formMessage.textContent = "게시글 삭제에 실패했습니다.";
+                        return;
+                    }
+
+                    formMessage.textContent = "게시글이 삭제되었습니다.";
+                    await loadPosts();
+                } catch (error) {
+                    formMessage.textContent =
+                        "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
+                    console.error(error);
+                }
             })
         })
 
@@ -93,27 +105,32 @@ async function loadPosts() {
         const title = document.querySelector("#title").value;
         const content = document.querySelector("#content").value;
 
-        const response = await fetch("/posts", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                title: title,
-                content: content
-            })
-        });
+        try {
+            const response = await fetch("/posts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content
+                })
+            });
 
-        if (response.ok) {
-            formMessage.textContent = "게시글이 등록되었습니다.";
-            postForm.reset();
-            await loadPosts();
-        } else {
-            const error = await response.json();
-            formMessage.textContent = error.title || "게시글 등록에 실패했습니다.";
+            if (response.ok) {
+                formMessage.textContent = "게시글이 등록되었습니다.";
+                postForm.reset();
+                await loadPosts();
+            } else {
+                const error = await response.json();
+                formMessage.textContent = error.title || "게시글 등록에 실패했습니다.";
+            }
+        } catch (error) {
+            formMessage.textContent =
+                "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
+            console.error(error);
         }
-
-    })
+    });
 
     const editForm = document.querySelector("#edit-form");
 
@@ -124,26 +141,32 @@ async function loadPosts() {
         const title = editTitle.value;
         const content = editContent.value;
 
-        const response = await fetch(`/posts/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                title: title,
-                content: content
-            })
-        });
+        try {
+            const response = await fetch(`/posts/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content
+                })
+            });
 
-        if (response.ok) {
-            formMessage.textContent = "게시글이 수정되었습니다.";
-            editForm.reset();
-            editSection.classList.add("hidden");
-            await loadPosts();
-        } else {
-            const error = await response.json();
+            if (response.ok) {
+                formMessage.textContent = "게시글이 수정되었습니다.";
+                editForm.reset();
+                editSection.classList.add("hidden");
+                await loadPosts();
+            } else {
+                const error = await response.json();
+                formMessage.textContent =
+                    error.title || "게시글 수정에 실패했습니다.";
+            }
+        } catch (error) {
             formMessage.textContent =
-                error.title || "게시글 수정에 실패했습니다.";
+                "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
+            console.error(error);
         }
     });
 
