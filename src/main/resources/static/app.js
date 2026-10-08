@@ -47,11 +47,17 @@ function setupCommentForms() {
             });
 
             if (!response.ok) {
-                alert("댓글 등록에 실패했습니다.");
+                const error = await response.json();
+
+                const message = form.querySelector(".comment-message");
+                message.textContent = error.content || "댓글 등록에 실패했습니다.";
                 return;
             }
 
             form.reset();
+
+            const message = form.querySelector(".comment-message");
+            message.textContent = "";
 
             const commentList = form
                 .closest(".comment-section")
@@ -113,6 +119,7 @@ async function loadPosts() {
                         required
                     />
                     <button type="submit">댓글 등록</button>
+                    <p class="comment-message"></p>
                 </form>
                 </div>
             `;
