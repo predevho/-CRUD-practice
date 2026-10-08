@@ -6,6 +6,62 @@ const editId = document.querySelector("#edit-id");
 const editTitle = document.querySelector("#edit-title");
 const editContent = document.querySelector("#edit-content");
 
+async function loadComments(postId, commentList) {
+    const response = await fetch(`/posts/${postId}/comments`);
+
+    if (!response.ok) {
+        commentList.textContent = "댓글을 불러오지 못했습니다.";
+        return;
+    }
+
+    const comments = await response.json();
+
+    if (comments.length === 0) {
+        commentList.textContent = "등록된 댓글이 없습니다.";
+        return;
+    }
+
+    commentList.innerHTML = comments
+        .map(function (comment) {
+            return `<p>${comment.content}</p>`;
+        })
+        .join("");
+}
+
+function setupCommentForms() {
+    const commentForms = document.querySelectorAll(".comment-form");
+
+    commentForms.forEach(function (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const postId = form.dataset.postId;
+            const content = form.elements.content.value;
+
+            const response = await fetch(`/posts/${postId}/comments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ content: content })
+            });
+
+            if (!response.ok) {
+                alert("댓글 등록에 실패했습니다.");
+                return;
+            }
+
+            form.reset();
+
+            const commentList = form
+                .closest(".comment-section")
+                .querySelector(".comment-list");
+
+            await loadComments(postId, commentList);
+        });
+    });
+}
+
 async function loadPosts() {
     postList.textContent = "게시글을 불러오는 중입니다...";
 
@@ -42,10 +98,34 @@ async function loadPosts() {
                 <button class="delete-button" data-id="${post.id}">
                     삭제
                 </button>
+                <div class="comment-section">
+                <h4>댓글</h4>
+            
+                <div class="comment-list" data-post-id="${post.id}">
+                    댓글을 불러오는 중...
+                </div>
+            
+                <form class="comment-form" data-post-id="${post.id}">
+                    <input
+                        type="text"
+                        name="content"
+                        placeholder="댓글을 입력하세요"
+                        required
+                    />
+                    <button type="submit">댓글 등록</button>
+                </form>
+                </div>
             `;
 
             postList.appendChild(postElement);
+
+            const commentList = postElement.querySelector(".comment-list");
+
+            loadComments(post.id, commentList);
+        
         });
+
+        setupCommentForms();
 
         const deleteButtons = document.querySelectorAll(".delete-button");
 
