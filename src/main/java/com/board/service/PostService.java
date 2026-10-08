@@ -5,6 +5,7 @@ import com.board.dto.PostResponse;
 import com.board.repository.PostRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
+    @Transactional
     public PostResponse createPost(String title, String content) {
         Post post = new Post(title, content);
         Post savedPost = postRepository.save(post);
@@ -25,6 +27,7 @@ public class PostService {
         return PostResponse.from(savedPost);
     }
 
+    @Transactional(readOnly = true)
     public List<PostResponse> findAllPosts() {
         return postRepository.findAll()
                 .stream()
@@ -32,6 +35,7 @@ public class PostService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public PostResponse findPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -43,6 +47,7 @@ public class PostService {
         return PostResponse.from(post);
     }
 
+    @Transactional
     public PostResponse updatePost(Long id, String title, String content) {
         Post post = postRepository.findById(id)
                 .orElseThrow(
@@ -52,11 +57,11 @@ public class PostService {
                         )
                 );
         post.update(title, content);
-        Post savedPost = postRepository.save(post);
 
-        return PostResponse.from(savedPost);
+        return PostResponse.from(post);
     }
 
+    @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
