@@ -28,7 +28,18 @@
 
     <section>
         <h2>게시글 목록</h2>
+
+        <form id="search-form">
+            <input
+                    type="text"
+                    id="keyword"
+                    placeholder="제목을 검색하세요"
+            />
+            <button type="submit">검색</button>
+        </form>
+
         <div id="post-list"></div>
+        <div id="pagination"></div>
     </section>
 
     <section id="edit-section" class="hidden">

@@ -3,6 +3,8 @@ package com.board.service;
 import com.board.domain.Post;
 import com.board.dto.PostResponse;
 import com.board.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +74,18 @@ public class PostService {
                 .stream()
                 .map(PostResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> findPosts(String keyword, Pageable pageable) {
+        Page<Post> posts;
+
+        if (keyword == null || keyword.isBlank()) {
+            posts = postRepository.findAll(pageable);
+        } else {
+            posts = postRepository.findByTitleContaining(keyword, pageable);
+        }
+
+        return posts.map(PostResponse::from);
     }
 }

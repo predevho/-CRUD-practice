@@ -1,14 +1,15 @@
 package com.board.controller;
 
-import com.board.domain.Post;
 import com.board.dto.PostCreateRequest;
 import com.board.dto.PostResponse;
 import com.board.dto.PostUpdateRequest;
 import com.board.service.PostService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class PostController {
@@ -52,11 +53,16 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public List<PostResponse> findPosts(@RequestParam(required = false) String keyword) {
-        if (keyword == null || keyword.isBlank()) {
-            return postService.findAllPosts();
-        }
+    public Page<PostResponse> findPosts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "id"));
 
-        return postService.searchPosts(keyword);
+        return postService.findPosts(keyword, pageable);
     }
 }

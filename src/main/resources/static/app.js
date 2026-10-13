@@ -6,6 +6,15 @@ const editId = document.querySelector("#edit-id");
 const editTitle = document.querySelector("#edit-title");
 const editContent = document.querySelector("#edit-content");
 
+const pagination = document.querySelector("#pagination");
+
+const pageSize = 10;
+
+const searchForm = document.querySelector("#search-form");
+const keywordInput = document.querySelector("#keyword");
+
+let currentKeyword = "";
+
 async function loadComments(postId, commentList) {
     const response = await fetch(`/posts/${postId}/comments`);
 
@@ -68,18 +77,28 @@ function setupCommentForms() {
     });
 }
 
-async function loadPosts() {
+async function loadPosts(page = 0) {
     postList.textContent = "게시글을 불러오는 중입니다...";
 
     try {
-        const response = await fetch("/posts");
+        const params = new URLSearchParams({
+            page: page,
+            size: pageSize
+        });
+
+        if (currentKeyword) {
+            params.set("keyword", currentKeyword);
+        }
+
+        const response = await fetch(`/posts?${params}`);
 
         if (!response.ok) {
             postList.textContent = "게시글을 불러오지 못했습니다.";
             return;
         }
 
-        const posts = await response.json();
+        const data = await response.json();
+        const posts = data.content;
 
         postList.innerHTML = "";
 
@@ -131,6 +150,28 @@ async function loadPosts() {
             loadComments(post.id, commentList);
         
         });
+
+        renderPagination(data);
+
+        function renderPagination(data) {
+            pagination.innerHTML = "";
+
+            for (let page = 0; page < data.totalPages; page++) {
+                const button = document.createElement("button");
+
+                button.textContent = page + 1;
+
+                if (page === data.number) {
+                    button.disabled = true;
+                }
+
+                button.addEventListener("click", function () {
+                    loadPosts(page);
+                });
+
+                pagination.appendChild(button);
+            }
+        }
 
         setupCommentForms();
 
@@ -263,3 +304,11 @@ async function loadPosts() {
         editForm.reset();
         editSection.classList.add("hidden");
     });
+
+searchForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    currentKeyword = keywordInput.value.trim();
+
+    await loadPosts(0);
+});
