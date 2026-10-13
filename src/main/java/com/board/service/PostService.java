@@ -65,4 +65,12 @@ public class PostService {
     public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> searchPosts(String keyword) {
+        return postRepository.findByTitleContaining(keyword)
+                .stream()
+                .map(PostResponse::from)
+                .toList();
+    }
 }

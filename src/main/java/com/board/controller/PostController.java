@@ -29,11 +29,6 @@ public class PostController {
         );
     }
 
-    @GetMapping("/posts")
-    public List<PostResponse> findAllPosts() {
-        return postService.findAllPosts();
-    }
-
     @GetMapping("/posts/{id}")
     public PostResponse findPost(@PathVariable Long id) {
         return postService.findPost(id);
@@ -54,5 +49,14 @@ public class PostController {
     @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deletePost(id);
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> findPosts(@RequestParam(required = false) String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return postService.findAllPosts();
+        }
+
+        return postService.searchPosts(keyword);
     }
 }
