@@ -80,7 +80,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void t3_게시글_목록에_댓글이_포함된다() throws Exception {
+    void t4_게시글_목록에_댓글이_포함된다() throws Exception {
         Post post = postRepository.save(new Post("댓글 포함 게시글", "댓글 테스트 내용"));
 
         commentRepository.save(new Comment("테스트 내용", post));
@@ -90,9 +90,28 @@ public class PostControllerTest {
                                 .param("size", "100")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].title")  
+                .andExpect(jsonPath("$.content[*].title")
                     .value(hasItem("댓글 포함 게시글")))
                 .andExpect(jsonPath("$.content[*].comments[*].content")
                     .value(hasItem("테스트 내용")));
+    }
+
+    @Test
+    void t5_게시글_페이지네이션() throws Exception {
+        postRepository.save(new Post("첫 번째 게시글", "내용"));
+        postRepository.save(new Post("두 번째 게시글", "내용"));
+        postRepository.save(new Post("세 번째 게시글", "내용"));
+
+        mockMvc.perform(
+                get("/posts")
+                        .param("page", "1")
+                        .param("size", "2")
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.number").value(1))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalElements").exists())
+                .andExpect(jsonPath("$.totalPages").exists());
     }
 }
