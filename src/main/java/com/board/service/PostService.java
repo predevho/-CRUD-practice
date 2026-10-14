@@ -1,7 +1,9 @@
 package com.board.service;
 
 import com.board.domain.Post;
+import com.board.dto.CommentResponse;
 import com.board.dto.PostResponse;
+import com.board.repository.CommentRepository;
 import com.board.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,14 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
@@ -86,6 +92,33 @@ public class PostService {
             posts = postRepository.findByTitleContaining(keyword, pageable);
         }
 
-        return posts.map(PostResponse::from);
+        Map<Long, List<CommentResponse>> commentsByPostId;
+
+        if (posts.isEmpty()) {
+            commentsByPostId = Map.of();
+        } else {
+            List<Long> postIds = posts.getContent()
+                    .stream()
+                    .map(Post::getId)
+                    .toList();
+
+            commentsByPostId = commentRepository.findByPost_IdIn(postIds)
+                    .stream()
+                    .map(CommentResponse::from)
+                    .collect(Collectors.groupingBy(
+                            CommentResponse::getPostId
+                    ));
+        }
+
+        return posts.map(post ->
+                PostResponse.from(
+                        post,
+                        commentsByPostId.getOrDefault(
+                                post.getId(),
+                                List.of()
+                        )
+                )
+        );
     }
+
 }

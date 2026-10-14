@@ -15,7 +15,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        "[generate_statistics]": true
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: TRACE
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

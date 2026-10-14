@@ -70,7 +70,7 @@ public class PostControllerTest {
                                 .param("keyword", "Spring")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].title")
+                .andExpect(jsonPath("$.content[*].title")
                         .value(hasItem("Spring Boot 학습")));
     }
 }

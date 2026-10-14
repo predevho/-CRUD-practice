@@ -43,6 +43,10 @@ public class Post {
         return content;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
